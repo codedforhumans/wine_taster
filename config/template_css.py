@@ -19,6 +19,8 @@ FILTER_HEIGHT = "50px"
 TABS_PADDING = "10px"
 TABS_PADDING_SPACE = "300px"
 
+INDENT = "10px"
+
 HOME = {
     "padding": HOME_PADDING_SIDES,
     # "padding-right": TOPBAR_PADDING_SIDES,
