@@ -20,13 +20,16 @@ from dash_init import app
 from questionnaire import questionnaire
 from layout_general import layout
 
+from database import Database
+
 SPACE = html.Br()
 SPACE_INPUTS = html.Div(style={"padding-bottom":"10px"})
 SPACE_SMALL = html.Div(style={"padding":"5px"})
 
 def get_new_data():
-    global RECOMMEND_GLOBAL
-    RECOMMEND_GLOBAL = "Json Object Coming soon"
+    global questions
+    db = Database()
+    questions = db.get_wine_names()
 
 UPDATE_INTERVAL = 3600
 
@@ -42,6 +45,6 @@ def layout_expert_sleep():
 
 def layout_expert():
     get_new_data()
-    return layout
+    return layout(questions)
 
 

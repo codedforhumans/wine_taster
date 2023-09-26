@@ -22,6 +22,10 @@ TABS_PADDING_SPACE = "300px"
 
 INDENT = "10px"
 
+DROPDOWN = {
+    "width": '50%'
+}
+
 LOGIN_BODY = {
     'display': 'flex',
     'flex-direction': 'column',

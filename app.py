@@ -18,6 +18,8 @@ from expert import layout_expert
 from taster import layout_taster
 from about import layout_about
 from expert_tasters import EXPERTS
+from database import Database
+from calculations import get_expert_data, get_taster_data
 # from login import layout_landing
 
 from dash.exceptions import PreventUpdate
@@ -27,6 +29,8 @@ SPACE = html.Br()
 SPACE_INPUTS = html.Div(style={"padding-bottom":"10px"})
 SPACE_SMALL = html.Div(style={"padding":"5px"})
 SPACE_SMALLER = html.Div(style={"padding":"2px"})
+
+db = Database()
 
 @app.callback(
     Output("content-div", "children"),
@@ -113,10 +117,9 @@ def display_page(pathname):
     else:
         return init_layout(tabs = html.Div([tabs_layout(["About"])]))
 
-    
 
 server = app.server
 
 
 if __name__ == '__main__':
-    app.run_server(host="0.0.0.0", port=8050, debug=True)
+    app.run_server(host="0.0.0.0", port=8050, debug=False)

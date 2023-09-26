@@ -3,6 +3,7 @@ import plotly.io as pio
 import time
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 from flask import send_from_directory
 import json
 
@@ -19,16 +20,19 @@ import config.template_dmc as style_dmc
 from dash_init import app
 from questionnaire import questionnaire
 from database import Database
+from calculations import Scorer, get_taster_data, get_expert_data
 
+db = Database()
 
 SPACE = html.Br()
 SPACE_INPUTS = html.Div(style={"padding-bottom":"10px"})
 SPACE_SMALL = html.Div(style={"padding":"5px"})
 
 def get_new_data():
-    global RECOMMEND_GLOBAL, db
+    global RECOMMEND_GLOBAL, questions
+    questions = db.get_wine_ids()
     RECOMMEND_GLOBAL = "Json Object Coming soon"
-    db = Database()
+
 
 UPDATE_INTERVAL = 3600
 
@@ -38,6 +42,8 @@ def get_new_data_interval():
 
 executor = ThreadPoolExecutor(max_workers = 1)
 executor.submit(get_new_data_interval)
+
+
 
 def layout_expert_sleep():
     return html.Div("Layout Expert Sleeping")
@@ -111,7 +117,7 @@ layout_slider = html.Div(
                 id={'index': str(k), 'type': v['type'], 'additional': False},
                 value = 0,
                 marks={
-                        round(val * 100/(len(v['options']) - 1)): 
+                        int(val * 100/(len(v['options']) - 1)): 
                             {'label': list(v['options'].keys())[val], 
                             "style": {"transform": "rotate(-25deg)"}}
                     for val in range(len(v['options']))
@@ -127,10 +133,42 @@ layout_slider = html.Div(
     ]
 )
 
+# def get_wine_name():
+    
+#     result = html.Div([
+#                 dmc.Select(
+#                     data = questions,
+#                     value = questions[0],
+#                     label = "Wine",
+#                     style = style.DROPDOWN,
+#                     icon = DashIconify(icon="radix-icons:magnifying-glass"),
+#                     rightSection = DashIconify(icon="radix-icons:chevron-down"),
+#                     id="select-wine"),
+#                     SPACE
+#                 ])
+#     return result
+
+# layout_wine_name = get_wine_name()
+
+def layout_wine_name(questions):
+    result = html.Div([
+                dmc.Select(
+                    data = questions,
+                    value = questions[0],
+                    label = "Wine",
+                    style = style.DROPDOWN,
+                    icon = DashIconify(icon="radix-icons:magnifying-glass"),
+                    rightSection = DashIconify(icon="radix-icons:chevron-down"),
+                    id="select-wine"),
+                    SPACE
+                ])
+    return result
+
 layout_answer = html.Div([html.Br(), btn := dmc.Button("Submit", variant="gradient"), answers := html.Div()])
 layout_answer_taster = html.Div([html.Br(), btn_taster := dmc.Button("Submit", variant="gradient"), answers_taster := html.Div()])
 
-layout = html.Div([
+def layout(questions):
+    return html.Div([layout_wine_name(questions),
     layout_single, layout_multi, 
     layout_slider, 
                    layout_answer
@@ -267,7 +305,7 @@ def disabled_input_multi(choices, id):
         }, 'id')
 )
 def disabled_input_slider(val, marks, id):
-    label = marks[str(val)]['label']
+    label = marks[str(int(val))]['label']
     values = slider_q[id['index']]['options'][label]
     color = slider_q[id['index']]['color']
     if len(values) > 0:
@@ -320,7 +358,8 @@ def collect(n_clicks, id, answer):
         # Writing to sample.json
         with open("expert.json", "w") as outfile:
             outfile.write(json_result)
-        return html.Div([SPACE, html.Div(done_message)])
+            outfile.close()
+        return html.Div([SPACE, html.Div(done_message), html.Div(id = "send-result")])
 
 
 done_message = "Expert Tasting Notes Successfully Submitted. Thank you."
@@ -367,9 +406,7 @@ def collect(n_clicks, id, answer):
         # Writing to sample.json
         with open("taster.json", "w") as outfile:
             outfile.write(json_result)
-        return html.Div([SPACE, score_div()]) # , html.Div(id = "send-result")
-
-from calculations import Scorer
+        return html.Div([SPACE, score_div(), html.Div(id = "send-result")])
 
 def score_div():
     scorer = Scorer()
@@ -409,11 +446,62 @@ def create_table(df):
         results += [result]
     return html.Div(results)
 
-# @app.callback(
-#         Output("send-result", "children"),
-#         Input('login-name', 'value'),
-#         Input('login-email', 'value'),
-#         Input('url', 'pathname')
-# )
-# def send_results(name, email, pathname):
-#     role_type = pathname
+
+@app.callback(
+        Output("send-result", "children"),
+        # Input('login-name', 'value'),
+        # Input('login-email', 'value'),
+        Input('url', 'pathname'),
+        Input("select-wine", "value"),
+        Input(btn, 'n_clicks'), 
+                [State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                        
+                    }, 'id'),
+                State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                    }, 'value')
+                ], 
+                # prevent_initial_call=True
+)
+def send_results(pathname, drink_name, n_clicks, id, answer): # name, email,
+    if n_clicks:
+        result = [v | {'answer': answer[i]} for i, v in enumerate(id)]
+
+        print("result")
+        print(result)
+        role_type = pathname[1:] # ignore pathname /
+        dict_submit = {}
+        name = "tamara"
+        email = "tamara@codedforhumans.com"
+
+        for curr_dict in result:
+            print(curr_dict)
+            index = curr_dict["index"]
+            additional = curr_dict["additional"]
+            answer = curr_dict["answer"]
+            if additional:
+                dict_submit[index + "_additional"] = answer
+            else:
+                dict_submit[index] = answer
+        
+
+        print("dict_submit")
+        print(dict_submit)
+
+        if role_type == "expert":
+            # expert_data = get_expert_data()
+            # print(expert_data)
+            db.submit_user_input(name, email, role_type, drink_name, dict_submit)
+            return html.Div("Submitted Expert Data")
+        elif role_type == "taster":
+            db.submit_user_input(name, email, role_type, drink_name, dict_submit)
+            return html.Div("Submitted Taster Data")
+        else:
+            return html.Div("")
