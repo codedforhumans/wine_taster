@@ -21,7 +21,14 @@ class Database:
 
     def load_questionnaire(self) -> None:
         for key, value in questionnaire.items():
-            self.db.collection("questionnaire").document(key).set(value, merge = True)
+            self.db.collection("questionnaire").document(key).set(value)
+
+    def get_questionnaire(self) -> dict:
+        docs = self.db.collection("questionnaire").stream()
+        result_dict = {}
+        for doc in docs:
+            result_dict[doc.id] = doc.to_dict()
+        return result_dict
 
     def submit_user_input(self, name, email, type, drink_name, dict_submit) -> None:
         

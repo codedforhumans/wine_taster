@@ -43,7 +43,7 @@ def get_new_data_interval():
 executor = ThreadPoolExecutor(max_workers = 1)
 executor.submit(get_new_data_interval)
 
-
+# questionnaire = db.get_questionnaire()
 
 def layout_expert_sleep():
     return html.Div("Layout Expert Sleeping")
