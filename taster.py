@@ -1,8 +1,10 @@
-from dash import Dash, dcc, html, Input, Output, ctx, State
+from dash import Dash, dcc, html, Input, Output, ctx, State, MATCH, ALL
 import plotly.io as pio
 import time
 import dash_bootstrap_components as dbc
+import dash_mantine_components as dmc
 from flask import send_from_directory
+import json
 
 pio.templates.default = "plotly_dark"
 
@@ -14,14 +16,15 @@ from config.template_functions import tabs_layout
 import config.template_css as style
 
 from dash_init import app
+from layout_general import layout_taster_general
 
 SPACE = html.Br()
 SPACE_INPUTS = html.Div(style={"padding-bottom":"10px"})
 SPACE_SMALL = html.Div(style={"padding":"5px"})
 
 def get_new_data():
-    global RECOMMEND_GLOBAL
-    RECOMMEND_GLOBAL = "Json Object Coming soon"
+    global EXPERT_DATA
+    EXPERT_DATA = "Json Object Coming soon"
 
 UPDATE_INTERVAL = 3600
 
@@ -37,5 +40,5 @@ def layout_taster_sleep():
 
 def layout_taster():
     get_new_data()
-    return html.Div([
-        "Hello Vyn Taster World!"])
+    return layout_taster_general
+

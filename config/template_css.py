@@ -7,6 +7,7 @@ CARD_MARGIN = "5px"
 
 BOX_PADDING = "20px"
 BOX_MARGIN = "5px"
+DOUBLE_BOX_MARGIN = "10px"
 
 TOPBAR_PADDING_TOP = "25px"
 TOPBAR_PADDING_SIDES = "40px"
@@ -20,6 +21,32 @@ TABS_PADDING = "10px"
 TABS_PADDING_SPACE = "300px"
 
 INDENT = "10px"
+
+LOGIN_BODY = {
+    'display': 'flex',
+    'flex-direction': 'column',
+    'align-items': 'center',
+    'justify-content': 'center',
+    'height': '100vh'
+}
+
+LOGIN_INPUT = {
+    'display': 'flex',
+    'flex-direction': 'column',
+    'align-items': 'center',
+    'justify-content': 'center',
+    'color':config.BACKGROUND_COLOR
+    # 'height': '100vh',
+}
+
+LOGIN_DIV = {
+    'display': 'flex',
+    'flex-direction': 'column',
+    'align-items': 'center',
+    'justify-content': 'center',
+    # 'height': '100vh',
+}
+
 
 HOME = {
     "padding": HOME_PADDING_SIDES,
@@ -165,3 +192,20 @@ UPLOAD_FILE_BIG = {
 TEXT_CENTER = {
     'text-align':'center' 
     }
+
+TABLE = {
+    "width": "100vw",
+    "padding": HOME_PADDING_SIDES,
+}
+
+RESULT_DIV = {
+    "display":"inline-flex"
+}
+
+RESULT_EXPERT = {
+    "padding-left": BOX_MARGIN,
+}
+
+RESULT_TASTER = {
+    "padding-left": DOUBLE_BOX_MARGIN,
+}
