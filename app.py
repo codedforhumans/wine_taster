@@ -151,7 +151,7 @@ def update_output(n_clicks, name_raw, phone_raw):
 )
 def display_page(pathname):
     if pathname == "/":
-        clear_user_info_json()
+        # clear_user_info_json()
         return layout_login
     elif pathname == "/expert":
         if not user_info_empty():

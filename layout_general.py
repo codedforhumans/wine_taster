@@ -414,19 +414,43 @@ def collect(n_clicks, wine_id, wine_guess, id, answer):
         db.submit_user_guess(taster_name, wine_id, wine_guess)
         bool_guess = db.get_wine_mapping()[wine_id] == wine_guess
         db.submit_user_guess_correct(taster_name, wine_id, bool_guess)
-        return html.Div([SPACE, score_div(taster_name, wine_id), html.Div(id = "send-result-taster")])
+        return html.Div([SPACE, html.Div(id = "send-result-taster"), html.Div(id ="scorer-div")])
 
-def score_div(taster_name, wine_id):
-    
-    scorer = Scorer(taster_name, wine_id)
-    score_perc = scorer.get_score()
-    score_summary = scorer.get_summary_taster_view()
-    db.submit_user_score(wine_id, taster_name, score_perc)
-    return html.Div([SPACE,
-                     html.Div("Score: " + str(score_perc) + "%"),
-                     html.Div("Comparison:"),
-                     html.Div(create_table(score_summary))
-                     ])
+
+@app.callback(Output("scorer-div", 'children'), 
+                Input(btn_taster, 'n_clicks'), 
+                Input("select-wine", "value"),
+                Input("wine-guess", "value"),
+                [State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                        
+                    }, 'id'),
+                State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                    }, 'value')
+                ], 
+                # prevent_initial_call=True
+                )
+def score_div(n_clicks, wine_id, wine_guess, id, answer):
+    if n_clicks:
+        user_info = get_user_info_dict()
+        taster_name = user_info["name"]
+        
+        scorer = Scorer(taster_name, wine_id)
+        score_perc = scorer.get_score()
+        score_summary = scorer.get_summary_taster_view()
+        db.submit_user_score(wine_id, taster_name, score_perc)
+        return html.Div([SPACE,
+                        html.Div("Score: " + str(score_perc) + "%"),
+                        html.Div("Comparison:"),
+                        html.Div(create_table(score_summary))
+                        ])
 
 font_size = "6px"
 expert_answer = "Expert Answer"
@@ -498,11 +522,11 @@ def send_results(pathname, drink_name, n_clicks, id, answer):
         if role_type == "expert":
             wine_id = db.get_wine_id_from_name(drink_name)
             db.submit_user_input(name, role_type, drink_name, dict_submit, wine_id)
-            clear_user_info_json()
+            # clear_user_info_json()
             return html.Div("Submitted Expert Data")
         elif role_type == "taster":
             db.submit_user_input(name, role_type, drink_name, dict_submit)
-            clear_user_info_json()
+            # clear_user_info_json()
             return html.Div("Submitted Taster Data")
         else:
             return html.Div("")
@@ -549,11 +573,11 @@ def send_results(pathname, drink_name, n_clicks, id, answer):
 
         if role_type == "expert":
             db.submit_user_input(name, phone, role_type, drink_name, dict_submit)
-            clear_user_info_json()
+            # clear_user_info_json()
             return html.Div("Submitted Expert Data")
         elif role_type == "taster":
             db.submit_user_input(name, role_type, drink_name, dict_submit)
-            clear_user_info_json()
+            # clear_user_info_json()
             return html.Div("Submitted Taster Data")
         else:
             return html.Div("")
