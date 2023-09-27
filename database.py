@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import firestore
 from firebase_admin import credentials
 from natsort import natsorted
+import pandas as pd
 
 from questionnaire import questionnaire
 
@@ -14,6 +15,7 @@ class Database:
     db = firestore.client()
     user_collection_name = "users"
     user_input_collection_name = "input"
+    user_score = "score"
     wine_id_collection_name = "wine_id"
     wine_id_document_name = "wines"
 
@@ -38,6 +40,20 @@ class Database:
         
         doc_ref = self.db.collection(self.user_input_collection_name).document(name)
         doc_ref.set({drink_name: {"type": type, "result": dict_submit, "wine_id": wine_id}}, merge = True)
+
+    def submit_user_score(self, wine_id, taster_name, score) -> None:
+        
+        doc_ref = self.db.collection(self.user_score).document(wine_id)
+        doc_ref.set({taster_name: score}, merge = True)
+
+    def submit_user_guess(self, taster_name, wine_id, wine_name) -> None:
+        
+        doc_ref = self.db.collection(self.user_input_collection_name).document(taster_name)
+        doc_ref.set({wine_id: {"guess": wine_name}}, merge = True)
+
+    def submit_user_guess_correct(self, taster_name, wine_id, guess_bool) -> None:
+        doc_ref = self.db.collection(self.user_input_collection_name).document(taster_name)
+        doc_ref.set({wine_id: {"correct": guess_bool}}, merge = True)
 
     def add_user(self, name, phone, type) -> None:
         doc_ref = self.db.collection(self.user_collection_name).document(name)
@@ -115,6 +131,21 @@ class Database:
             if not value["scored"]:
                 question_numbers += [q_id]
         return question_numbers
+    
+    def get_scores_df(self):
+        docs = self.db.collection(self.user_score).stream()
+        wine_dict = {}
+        for doc in docs:
+            wine_dict[doc.id] = doc.to_dict()
+        df = pd.concat({
+                k: pd.DataFrame.from_dict(v, 'index') for k, v in wine_dict.items()
+            }, axis=0).reset_index()
+        df = df.rename(columns={'level_0': "Wine ID", 'level_1': "Taster", 0: "Score (Percentage)"})
+        df_mapping = pd.DataFrame(list(self.get_wine_mapping().items()), columns=['Wine ID', 'Wine Name'])
+        result_df = pd.merge(df, df_mapping, on=["Wine ID"], how="left")
+        result_df['Score (Percentage)'] = df['Score (Percentage)'].astype(int)
+        result_df = result_df.sort_values(by=["Score (Percentage)"], ascending=False).reset_index(drop=True)
+        return result_df[:10]
         
         
 def get_key(dict, val):

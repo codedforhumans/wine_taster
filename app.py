@@ -21,6 +21,7 @@ from taster import layout_taster
 from about import layout_about
 from expert_tasters import EXPERTS, TASTERS
 from database import Database
+from leaderboard import layout_leader
 # from login import layout_landing
 
 from dash.exceptions import PreventUpdate
@@ -44,6 +45,8 @@ def content(tab):
         return layout_taster()
     elif tab == "About":
         return layout_about()
+    elif tab == "Leaderboard":
+        return layout_leader()
 
 # tabs = html.Div([tabs_layout(["Taster", "About"])])
 
@@ -152,7 +155,7 @@ def display_page(pathname):
         return layout_login
     elif pathname == "/expert":
         if not user_info_empty():
-            return init_layout(tabs = html.Div([tabs_layout(["Expert", "About"])]))
+            return init_layout(tabs = html.Div([tabs_layout(["Expert", "About", "Leaderboard"])]))
         else:
             return layout_login
     elif pathname == "/taster":

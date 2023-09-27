@@ -48,9 +48,9 @@ executor.submit(get_new_data_interval)
 def layout_expert_sleep():
     return html.Div("Layout Expert Sleeping")
 
-def layout_expert():
-    get_new_data()
-    return layout
+# def layout_expert():
+#     get_new_data()
+#     return layout
 
 warning_text = "Please choose generic descriptors first before granular descriptors"
 
@@ -133,22 +133,21 @@ layout_slider = html.Div(
     ]
 )
 
-# def get_wine_name():
-    
-#     result = html.Div([
-#                 dmc.Select(
-#                     data = questions,
-#                     value = questions[0],
-#                     label = "Wine",
-#                     style = style.DROPDOWN,
-#                     icon = DashIconify(icon="radix-icons:magnifying-glass"),
-#                     rightSection = DashIconify(icon="radix-icons:chevron-down"),
-#                     id="select-wine"),
-#                     SPACE
-#                 ])
-#     return result
-
-# layout_wine_name = get_wine_name()
+layout_dropdown = html.Div(
+    [
+        html.Div([
+                dmc.Select(
+                    data = db.get_wine_names(),
+                    value = db.get_wine_names()[0],
+                    label = "Looking at your tasting note, which wine do you think this could be?",
+                    style = style.DROPDOWN,
+                    icon = DashIconify(icon="radix-icons:magnifying-glass"),
+                    rightSection = DashIconify(icon="radix-icons:chevron-down"),
+                    id="wine-guess"),
+                    SPACE
+                ])
+    ]
+)
 
 def layout_wine_name(questions):
     result = html.Div([
@@ -177,7 +176,7 @@ def layout(questions):
 def layout_taster_general(questions):
     return html.Div([layout_wine_name(questions),
     layout_single, layout_multi, 
-    layout_slider, 
+    layout_slider, layout_dropdown,
                    layout_answer_taster
                    ], style = style.HOME)
 
@@ -383,6 +382,7 @@ def disabled_btn(answer_taster):
 @app.callback(Output(answers_taster, 'children'), 
                 Input(btn_taster, 'n_clicks'), 
                 Input("select-wine", "value"),
+                Input("wine-guess", "value"),
                 [State(
                     {'index': ALL,
                         # 'category': 'questionnaire',
@@ -399,7 +399,7 @@ def disabled_btn(answer_taster):
                 ], 
                 # prevent_initial_call=True
                 )
-def collect(n_clicks, wine_id, id, answer):
+def collect(n_clicks, wine_id, wine_guess, id, answer):
     if n_clicks:
         result = [v | {'answer': answer[i]} for i, v in enumerate(id)]
         json_object = json.dumps(result)
@@ -411,6 +411,9 @@ def collect(n_clicks, wine_id, id, answer):
             outfile.close()
         user_info = get_user_info_dict()
         taster_name = user_info["name"]
+        db.submit_user_guess(taster_name, wine_id, wine_guess)
+        bool_guess = db.get_wine_mapping()[wine_id] == wine_guess
+        db.submit_user_guess_correct(taster_name, wine_id, bool_guess)
         return html.Div([SPACE, score_div(taster_name, wine_id), html.Div(id = "send-result-taster")])
 
 def score_div(taster_name, wine_id):
@@ -418,6 +421,7 @@ def score_div(taster_name, wine_id):
     scorer = Scorer(taster_name, wine_id)
     score_perc = scorer.get_score()
     score_summary = scorer.get_summary_taster_view()
+    db.submit_user_score(wine_id, taster_name, score_perc)
     return html.Div([SPACE,
                      html.Div("Score: " + str(score_perc) + "%"),
                      html.Div("Comparison:"),
