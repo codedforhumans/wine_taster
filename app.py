@@ -21,7 +21,6 @@ from taster import layout_taster
 from about import layout_about
 from expert_tasters import EXPERTS, TASTERS
 from database import Database
-from calculations import get_expert_data, get_taster_data
 # from login import layout_landing
 
 from dash.exceptions import PreventUpdate

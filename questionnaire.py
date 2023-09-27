@@ -9,7 +9,8 @@ questionnaire = {
         'options': {'Clear':[], 'Cloudy':[]},
         'color': 'blue',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '2': {
         'type': 'choice',
@@ -18,7 +19,8 @@ questionnaire = {
         'options': {'Dull':[], 'Bright':[], 'Brilliant':[]},
         'color': 'yellow',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '3': {
         'type': 'choice',
@@ -27,7 +29,8 @@ questionnaire = {
         'options': {'Pale':[], 'Medium':[], 'Deep':[], 'Translucent':[], 'Opaque': []},
         'color': 'orange',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '4': {
         'type': 'multi-choice',
@@ -36,7 +39,8 @@ questionnaire = {
         'options': {'Gas - is it bubbly?':[], 'Sediment':[]},
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '5': {
         'type':
@@ -50,7 +54,8 @@ questionnaire = {
         },
         'color': 'blue',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '6': {
         'type':
@@ -62,7 +67,8 @@ questionnaire = {
         ,
         'color': 'grape',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '7': {
         'type':
@@ -74,7 +80,8 @@ questionnaire = {
         ,
         'color': 'pink',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '8': {
         'type':
@@ -86,7 +93,8 @@ questionnaire = {
         ,
         'color': 'red',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '9': {
         'type':
@@ -98,7 +106,8 @@ questionnaire = {
         ,
         'color': 'orange',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '10': {
         'type':
@@ -109,7 +118,8 @@ questionnaire = {
             {'Delicate':[], 'Moderate':[], 'Powerful':[]},
         'color': 'green',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '11': {
         'type':
@@ -120,7 +130,8 @@ questionnaire = {
             {'TCA':[], 'H2S':[], 'Volatile Acidity':[], 'Brett':[], 'Oxidation':[], 'Other':[]},
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '12': {
         'type':
@@ -136,13 +147,14 @@ questionnaire = {
         },
         'color': 'grape',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '13': {
         'type':
         'slider',
         'question':
-        'Tannin',
+        'Tannin/Phenolics',
         'options': {
             'Low':["Low: Soft, smooth, no noticable astringency. Milk chocolate or banana"],
             'Soft':["Soft mouthfeel, no assertive tannins (moderate), lightly brewed or milk tea, watermelon or fresh red capsicum "],
@@ -152,26 +164,28 @@ questionnaire = {
         },
         'color': 'grape',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '13.5': {
         'type':
         'multi-choice',
         'question':
-        'Tannin',
+        'Tannin/Phenolics',
         'options': {
             'Ripe':[],
             'Smooth':[],
             'Unripe':[],
             'Green':[],
-            'Course':[],
+            'Oily':[],
             'Stalky':[],
             'Chalky':[],
             'Fine grained':[]
         },
         'color': 'grape',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '14': {
         'type':
@@ -187,7 +201,8 @@ questionnaire = {
         },
         'color': 'blue',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '15': {
         'type':
@@ -203,7 +218,8 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '16': {
         'type':
@@ -216,7 +232,7 @@ questionnaire = {
             'Earth': ['mineral (slate)', 'mineral (chalk)', 'mineral (Flint/stone)', 'wet stones', 'white mushroom'],
             'Grape': ['muscat', 'grape'],
             'Botrytis': ['ginger', 'honey','saffron'],
-            'Citrus': ['grapefruit', 'lemon', 'lime', 'orange', 'lime candy' ,'citronella','grapefruit', 'orange', 'peel', 'lime zest'],
+            'Citrus': ['grapefruit', 'lemon', 'lime', 'orange', 'lime candy' ,'citronella', 'peel', 'lime zest'],
             'Stone fruit': ['peach', 'apricot', 'nectarine', 'white plum','white peach','white nectarine'],
             'Tropical fruit': ['banana', 'banana peel', 'guava', 'passion fruit', 'pineapple'],
             'Berry': ['blackcurrant'],
@@ -224,7 +240,8 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : True
+        'warning' : True,
+        'scored' : True
     },
     '17': {
         'type':
@@ -237,7 +254,8 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : True
+        'warning' : True,
+        'scored' : True
     },
     '18': {
         'type':
@@ -253,65 +271,70 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : True
+        'warning' : True,
+        'scored' : True
     },
-    '19': {
-        'type':
-        'choice',
-        'question':
-        'Quality Balance',
-        'options': {
-            'Unbalance (any element dominates)': [],
-            'well balanced':[],
-            'Exceptionally well balanced':[]
-        },
-        'color': 'dark',
-        'additional': False,
-        'warning' : False
-    },
-    '20': {
-        'type':
-        'choice',
-        'question':
-        'Quality Length',
-        'options': {
-            'short': [],
-            'medium':[],
-            'long':[],
-            'outstanding':[]
-        },
-        'color': 'dark',
-        'additional': False,
-        'warning' : False
-    },
-    '21': {
-        'type':
-        'choice',
-        'question':
-        'Quality Intensity',
-        'options': {
-            'low': [],
-            'medium':[],
-            'high':[]
-        },
-        'color': 'dark',
-        'additional': False,
-        'warning' : False
-    },
-    '22': {
-        'type':
-        'choice',
-        'question':
-        'Quality Complexity',
-        'options': {
-            'low': [],
-            'medium':[],
-            'high':[]
-        },
-        'color': 'dark',
-        'additional': False,
-        'warning' : False
-    },
+    # '19': {
+    #     'type':
+    #     'choice',
+    #     'question':
+    #     'Quality Balance',
+    #     'options': {
+    #         'Unbalance (any element dominates)': [],
+    #         'well balanced':[],
+    #         'Exceptionally well balanced':[]
+    #     },
+    #     'color': 'dark',
+    #     'additional': False,
+    #     'warning' : False,
+    #     'scored' : False
+    # },
+    # '20': {
+    #     'type':
+    #     'choice',
+    #     'question':
+    #     'Quality Length',
+    #     'options': {
+    #         'short': [],
+    #         'medium':[],
+    #         'long':[],
+    #         'outstanding':[]
+    #     },
+    #     'color': 'dark',
+    #     'additional': False,
+    #     'warning' : False,
+    #     'scored' : False
+    # },
+    # '21': {
+    #     'type':
+    #     'choice',
+    #     'question':
+    #     'Quality Intensity',
+    #     'options': {
+    #         'low': [],
+    #         'medium':[],
+    #         'high':[]
+    #     },
+    #     'color': 'dark',
+    #     'additional': False,
+    #     'warning' : False,
+    #     'scored' : False
+    # },
+    # '22': {
+    #     'type':
+    #     'choice',
+    #     'question':
+    #     'Quality Complexity',
+    #     'options': {
+    #         'low': [],
+    #         'medium':[],
+    #         'high':[]
+    #     },
+    #     'color': 'dark',
+    #     'additional': False,
+    #     'warning' : False,
+    #     'scored' : False
+    # },
     '23': {
         'type':
         'slider',
@@ -326,7 +349,8 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '24': {
         'type':
@@ -342,7 +366,8 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : True
     },
     '25': {
         'type':
@@ -363,6 +388,7 @@ questionnaire = {
         },
         'color': 'dark',
         'additional': False,
-        'warning' : False
+        'warning' : False,
+        'scored' : False
     },
 }

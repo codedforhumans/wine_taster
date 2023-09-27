@@ -20,7 +20,7 @@ import config.template_dmc as style_dmc
 from dash_init import app
 from questionnaire import questionnaire
 from database import Database
-from calculations import Scorer, get_taster_data, get_expert_data
+from calculations import Scorer
 
 db = Database()
 
@@ -382,6 +382,7 @@ def disabled_btn(answer_taster):
 
 @app.callback(Output(answers_taster, 'children'), 
                 Input(btn_taster, 'n_clicks'), 
+                Input("select-wine", "value"),
                 [State(
                     {'index': ALL,
                         # 'category': 'questionnaire',
@@ -398,7 +399,7 @@ def disabled_btn(answer_taster):
                 ], 
                 # prevent_initial_call=True
                 )
-def collect(n_clicks, id, answer):
+def collect(n_clicks, wine_id, id, answer):
     if n_clicks:
         result = [v | {'answer': answer[i]} for i, v in enumerate(id)]
         json_object = json.dumps(result)
@@ -407,12 +408,16 @@ def collect(n_clicks, id, answer):
         # Writing to sample.json
         with open("taster.json", "w") as outfile:
             outfile.write(json_result)
-        return html.Div([SPACE, score_div(), html.Div(id = "send-result")])
+            outfile.close()
+        user_info = get_user_info_dict()
+        taster_name = user_info["name"]
+        return html.Div([SPACE, score_div(taster_name, wine_id), html.Div(id = "send-result-taster")])
 
-def score_div():
-    scorer = Scorer()
+def score_div(taster_name, wine_id):
+    
+    scorer = Scorer(taster_name, wine_id)
     score_perc = scorer.get_score()
-    score_summary = scorer.get_summary_taster_view().fillna("-")
+    score_summary = scorer.get_summary_taster_view()
     return html.Div([SPACE,
                      html.Div("Score: " + str(score_perc) + "%"),
                      html.Div("Comparison:"),
@@ -422,7 +427,7 @@ def score_div():
 font_size = "6px"
 expert_answer = "Expert Answer"
 taster_answer = "Taster Answer"
-question = "Question"
+question = "Question Text"
 
 def create_table(df):
     results = []
@@ -485,16 +490,65 @@ def send_results(pathname, drink_name, n_clicks, id, answer):
                 dict_submit[index] = answer
         user_info = get_user_info_dict()
         name = user_info["name"]
+        
+        if role_type == "expert":
+            wine_id = db.get_wine_id_from_name(drink_name)
+            db.submit_user_input(name, role_type, drink_name, dict_submit, wine_id)
+            clear_user_info_json()
+            return html.Div("Submitted Expert Data")
+        elif role_type == "taster":
+            db.submit_user_input(name, role_type, drink_name, dict_submit)
+            clear_user_info_json()
+            return html.Div("Submitted Taster Data")
+        else:
+            return html.Div("")
+        
+
+@app.callback(
+        Output("send-result-taster", "children"),
+        Input('url', 'pathname'),
+        Input("select-wine", "value"),
+        Input(btn_taster, 'n_clicks'),
+                [State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                        
+                    }, 'id'),
+                State(
+                    {'index': ALL,
+                        # 'category': 'questionnaire',
+                        'type': ALL,
+                        'additional': ALL,
+                    }, 'value'),
+                ], 
+                # prevent_initial_call=True
+)
+def send_results(pathname, drink_name, n_clicks, id, answer):
+    if n_clicks:
+        result = [v | {'answer': answer[i]} for i, v in enumerate(id)]
+        role_type = pathname[1:] # ignore pathname /
+        dict_submit = {}
+
+        for curr_dict in result:
+            index = curr_dict["index"]
+            additional = curr_dict["additional"]
+            answer = curr_dict["answer"]
+            if additional:
+                dict_submit[index + "_additional"] = answer
+            else:
+                dict_submit[index] = answer
+        user_info = get_user_info_dict()
+        name = user_info["name"]
         phone = user_info["phone"]
-        print("user_info")
-        print(user_info)
 
         if role_type == "expert":
             db.submit_user_input(name, phone, role_type, drink_name, dict_submit)
             clear_user_info_json()
             return html.Div("Submitted Expert Data")
         elif role_type == "taster":
-            db.submit_user_input(name, phone, role_type, drink_name, dict_submit)
+            db.submit_user_input(name, role_type, drink_name, dict_submit)
             clear_user_info_json()
             return html.Div("Submitted Taster Data")
         else:
