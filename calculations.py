@@ -31,14 +31,25 @@ class Scorer:
         return db.get_taster_results(self.taster_name, self.wine_id)
 
     def get_comparison_df(self):
-        result = pd.merge(self.dict_to_df_raw(self.get_expert_data()), 
-                          self.dict_to_df_raw(self.get_taster_data()), 
+        expert = self.dict_to_df_raw(self.get_expert_data())
+        print("expert")
+        print(expert)
+        taster = self.dict_to_df_raw(self.get_taster_data())
+        print("taster")
+        print(taster)
+        result = pd.merge(expert, 
+                          taster, 
                           on=["Question"], how='outer')
         result = result.rename(columns={"Answer_x": expert_answer, "Answer_y": taster_answer})
         return result
     
     def dict_to_df_raw(self, dict):
-        return pd.DataFrame(dict.items(), columns=["Question", "Answer"])
+        try:
+            result = pd.DataFrame(dict.items(), columns=["Question", "Answer"])
+            return result
+        except:
+            result = pd.DataFrame(columns=["Question", "Answer"])
+            return result
         
     
     def get_score(self):

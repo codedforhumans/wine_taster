@@ -414,7 +414,7 @@ def collect(n_clicks, wine_id, wine_guess, id, answer):
         db.submit_user_guess(taster_name, wine_id, wine_guess)
         bool_guess = db.get_wine_mapping()[wine_id] == wine_guess
         db.submit_user_guess_correct(taster_name, wine_id, bool_guess)
-        return html.Div([SPACE, html.Div(id = "send-result-taster"), html.Div(id ="scorer-div")])
+        return html.Div([SPACE, html.Div(id = "send-result-taster")])
 
 
 @app.callback(Output("scorer-div", 'children'), 
@@ -441,7 +441,7 @@ def score_div(n_clicks, wine_id, wine_guess, id, answer):
     if n_clicks:
         user_info = get_user_info_dict()
         taster_name = user_info["name"]
-        
+        print(wine_id)
         scorer = Scorer(taster_name, wine_id)
         score_perc = scorer.get_score()
         score_summary = scorer.get_summary_taster_view()
@@ -578,7 +578,7 @@ def send_results(pathname, drink_name, n_clicks, id, answer):
         elif role_type == "taster":
             db.submit_user_input(name, role_type, drink_name, dict_submit)
             # clear_user_info_json()
-            return html.Div("Submitted Taster Data")
+            return html.Div(["Submitted Taster Data", html.Div(id ="scorer-div")])
         else:
             return html.Div("")
         
