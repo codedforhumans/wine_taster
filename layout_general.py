@@ -155,7 +155,7 @@ def layout_wine_name(questions):
                 dmc.Select(
                     data = questions,
                     value = questions[0],
-                    label = "Wine",
+                    label = "Choose a Wine",
                     style = style.DROPDOWN,
                     icon = DashIconify(icon="radix-icons:magnifying-glass"),
                     rightSection = DashIconify(icon="radix-icons:chevron-down"),
@@ -174,7 +174,8 @@ def layout(questions):
                    layout_answer
                    ], style = style.HOME)
 
-layout_taster_general = html.Div([
+def layout_taster_general(questions):
+    return html.Div([layout_wine_name(questions),
     layout_single, layout_multi, 
     layout_slider, 
                    layout_answer_taster
@@ -449,11 +450,9 @@ def create_table(df):
 
 @app.callback(
         Output("send-result", "children"),
-        # Input('login-name', 'value'),
-        # Input('login-email', 'value'),
         Input('url', 'pathname'),
         Input("select-wine", "value"),
-        Input(btn, 'n_clicks'), 
+        Input(btn, 'n_clicks'),
                 [State(
                     {'index': ALL,
                         # 'category': 'questionnaire',
@@ -466,23 +465,17 @@ def create_table(df):
                         # 'category': 'questionnaire',
                         'type': ALL,
                         'additional': ALL,
-                    }, 'value')
+                    }, 'value'),
                 ], 
                 # prevent_initial_call=True
 )
-def send_results(pathname, drink_name, n_clicks, id, answer): # name, email,
+def send_results(pathname, drink_name, n_clicks, id, answer):
     if n_clicks:
         result = [v | {'answer': answer[i]} for i, v in enumerate(id)]
-
-        print("result")
-        print(result)
         role_type = pathname[1:] # ignore pathname /
         dict_submit = {}
-        name = "tamara"
-        email = "tamara@codedforhumans.com"
 
         for curr_dict in result:
-            print(curr_dict)
             index = curr_dict["index"]
             additional = curr_dict["additional"]
             answer = curr_dict["answer"]
@@ -490,18 +483,28 @@ def send_results(pathname, drink_name, n_clicks, id, answer): # name, email,
                 dict_submit[index + "_additional"] = answer
             else:
                 dict_submit[index] = answer
-        
-
-        print("dict_submit")
-        print(dict_submit)
+        user_info = get_user_info_dict()
+        name = user_info["name"]
+        phone = user_info["phone"]
+        print("user_info")
+        print(user_info)
 
         if role_type == "expert":
-            # expert_data = get_expert_data()
-            # print(expert_data)
-            db.submit_user_input(name, email, role_type, drink_name, dict_submit)
+            db.submit_user_input(name, phone, role_type, drink_name, dict_submit)
+            clear_user_info_json()
             return html.Div("Submitted Expert Data")
         elif role_type == "taster":
-            db.submit_user_input(name, email, role_type, drink_name, dict_submit)
+            db.submit_user_input(name, phone, role_type, drink_name, dict_submit)
+            clear_user_info_json()
             return html.Div("Submitted Taster Data")
         else:
             return html.Div("")
+        
+
+def get_user_info_dict():
+    with open('user_info.json') as json_file:
+        data = json.load(json_file)
+    return data
+
+def clear_user_info_json():
+    open('user_info.json', 'w').close()

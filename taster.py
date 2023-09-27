@@ -17,14 +17,16 @@ import config.template_css as style
 
 from dash_init import app
 from layout_general import layout_taster_general
+from database import Database
 
 SPACE = html.Br()
 SPACE_INPUTS = html.Div(style={"padding-bottom":"10px"})
 SPACE_SMALL = html.Div(style={"padding":"5px"})
 
 def get_new_data():
-    global EXPERT_DATA
-    EXPERT_DATA = "Json Object Coming soon"
+    global db, questions
+    db = Database()
+    questions = db.get_wine_ids()
 
 UPDATE_INTERVAL = 3600
 
@@ -40,5 +42,5 @@ def layout_taster_sleep():
 
 def layout_taster():
     get_new_data()
-    return layout_taster_general
+    return layout_taster_general(questions)
 
